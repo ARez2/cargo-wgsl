@@ -28,7 +28,7 @@ impl Naga {
         // Process //!include statements
         for line in shader.clone().lines() {
             if line.starts_with(IGNORE_INSTRUCTION) {
-                continue;
+                return Ok(());
             } else if line.starts_with(INCLUDE_INSTRUCTION) {
                 for include in line.split_whitespace().skip(1) {
                     let includepath = std::path::PathBuf::from(path.parent().unwrap().join(include));
