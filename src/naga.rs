@@ -28,7 +28,7 @@ impl Naga {
         for line in shader.clone().lines() {
             if line.starts_with(INCLUDE_INSTRUCTION) {
                 for include in line.split_whitespace().skip(1) {
-                    let includepath = std::path::PathBuf::from(SHADER_PATH).join(include);
+                    let includepath = std::path::PathBuf::from(path.parent().unwrap().join(include));
                     let contents = std::fs::read_to_string(includepath.clone()).map_err(WgslError::from)?;
                     shader.insert_str(0, &contents);
                 };
