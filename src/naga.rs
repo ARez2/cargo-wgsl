@@ -22,7 +22,7 @@ impl Naga {
     }
 
     pub fn validate_wgsl(&mut self, path: &Path) -> Result<(), WgslError> {
-        let shader = std::fs::read_to_string(&path).map_err(WgslError::from)?;
+        let mut shader = std::fs::read_to_string(&path).map_err(WgslError::from)?;
         
         // Process //!include statements
         for line in shader.clone().lines() {
