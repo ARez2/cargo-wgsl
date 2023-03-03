@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::wgsl_error::WgslError;
 
+const INCLUDE_INSTRUCTION: &'static str = "//!include";
+
 pub struct Naga {
     validator: naga::valid::Validator,
 }
@@ -21,6 +23,18 @@ impl Naga {
 
     pub fn validate_wgsl(&mut self, path: &Path) -> Result<(), WgslError> {
         let shader = std::fs::read_to_string(&path).map_err(WgslError::from)?;
+        
+        // Process //!include statements
+        for line in shader.clone().lines() {
+            if line.starts_with(INCLUDE_INSTRUCTION) {
+                for include in line.split_whitespace().skip(1) {
+                    let includepath = std::path::PathBuf::from(SHADER_PATH).join(include);
+                    let contents = std::fs::read_to_string(includepath.clone()).map_err(WgslError::from)?;
+                    shader.insert_str(0, &contents);
+                };
+            };
+        };
+        
         let module =
             wgsl::parse_str(&shader).map_err(|err| WgslError::from_parse_err(err, &shader))?;
 
